@@ -13,26 +13,29 @@ public class ServiceProvider extends User {
 
     private String location; //in JSON format
     private double availabiltyRadius=0;
-    private long id; //ServiceProvider id(from DB) would be used here.
+    private long verificationid = 0; //ServiceProvider id(from DB) would be used here.
     private int numberOfCancellations;
     private String bankInfo;        //acc number, swift no, bank id etc
-    private ArrayList<ServiceType> servicesOffered;
+    private ArrayList<String> servicesOffered;
     private ArrayList<Service> servicesProvided; //get from service ClassID
     private ArrayList<Review> reviewsOnUser;      // get from service class userReview
 
 
     public ServiceProvider(String username, String fullname, Date dateOfBirth,
                            String phoneNumber, String email,String location, double availabiltyRadius,
-                           String serviceproviderid,String bankInfo,ArrayList<ServiceType> servicesOffered,
+                           String serviceproviderid,String bankInfo,ArrayList<String> servicesOffered,
                            String password){
         super(fullname, password, dateOfBirth, phoneNumber, email);
         this.location = location;
         this.availabiltyRadius = availabiltyRadius;
-        this.id = id;
+        
         this.bankInfo = bankInfo;
         this.servicesOffered = servicesOffered;
     }
-    //GPS location
+    public ServiceProvider() {
+		// TODO Auto-generated constructor stub
+	}
+	//GPS location
     public String getLocation() {
         return location;
     }
@@ -42,12 +45,12 @@ public class ServiceProvider extends User {
     }
 
     //Service provider ID
-    public long getID() {
-        return id;
+    public long getVerificationID() {
+        return verificationid;
     }
 
-    public void setID(long serviceproviderId) {
-        this.id = serviceproviderId;
+    public void setVerificationID(long serviceproviderId) {
+        this.verificationid = serviceproviderId;
     }
 
     //User id
@@ -86,7 +89,7 @@ public class ServiceProvider extends User {
         }
     }
 
-    public boolean addServicesOffered(ServiceType servicetype) {
+    public boolean addServicesOffered(String servicetype) {
         if(!servicesOffered.contains(servicetype)){
             servicesOffered.add(servicetype);
         }
@@ -97,7 +100,7 @@ public class ServiceProvider extends User {
         return servicesOffered.remove(servicetype);
     }
     
-    public ArrayList<ServiceType> getServiceTypes() {
+    public ArrayList<String> getServiceTypes() {
 		return servicesOffered;
 	}
     

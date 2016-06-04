@@ -10,6 +10,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
 import com.anearcan.jireh.elements.Service;
 
 
@@ -23,15 +26,26 @@ public class ServiceActions {
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     // Query parameters are parameters: http://localhost/<appln-folder-name>/user/update
-    public String updateService() {
+    public String updateService(String serviceJson) {
 		
 		long id=0; 
-		String key=""; 
+		String key="";
 		Object value = null;
+		String result="";
 		
-		String result="";		
-		System.out.println("Update user webservice is in.");
-		if(DBConnection.updateUser(id, key, value)){
+		try {
+			JSONObject o = new JSONObject(serviceJson);
+			id = o.getLong("id");
+			key = o.getString("key");
+			value = o.get("value");
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("Update service webservice is in. "+ serviceJson);
+		
+		if(DBConnection.updateService(id, key, value)){
 			result = Utility.constructJSON("updateService", true, "Service updated successfully.");
 		}else{
 			result = Utility.constructJSON("updateService", false);
@@ -45,9 +59,9 @@ public class ServiceActions {
     // Produces JSON as response
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/update?email=abc&password=xyz
-    public String createService() {
-		Service s = null;
+    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/create
+    public String createService(String serviceJson) {
+		Service s = Utility.generateServiceFromJSON(serviceJson);
 		
 		String result="";
 		
@@ -59,7 +73,6 @@ public class ServiceActions {
 				result = Utility.constructJSON("createService", false);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
@@ -72,7 +85,7 @@ public class ServiceActions {
     // Produces JSON as response
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/update?email=abc&password=xyz
+    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/delete/<id>
     public String deleteService(@PathParam("id") long id) {
 		
 		String result="";		

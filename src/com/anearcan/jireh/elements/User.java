@@ -49,7 +49,19 @@ public class User {
     }
 
     
-    public long getID(){
+    public User() {
+    	this.password = "";
+        this.fullname = "";
+        this.dateOfBirth = new Date(0);
+        this.phoneNumber = "";
+        this.email = "";
+        servicesRequested = new ArrayList<Service>();
+        reviewsOn = new ArrayList<Review>();
+        averageRating = 0.0;
+        currentLocation = "";
+	}
+
+	public long getID(){
     	return id;
     }
     

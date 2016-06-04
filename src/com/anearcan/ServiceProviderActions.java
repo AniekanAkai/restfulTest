@@ -5,7 +5,11 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 import com.anearcan.jireh.elements.ServiceProvider;
 
@@ -19,13 +23,23 @@ public class ServiceProviderActions {
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     // Query parameters are parameters: http://localhost/<appln-folder-name>/user/update?email=abc&password=xyz
-    public String updateServiceProvider() {
+    public String updateServiceProvider(String serviceProviderJson) {
 		
 		long id=0; 
-		String key=""; 
+		String key="";
 		Object value = null;
+		String result="";
 		
-		String result="";		
+		try {
+			JSONObject o = new JSONObject(serviceProviderJson);
+			id = o.getLong("id");
+			key = o.getString("key");
+			value = o.get("value");
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
 		System.out.println("Update service provider webservice is in.");
 		if(DBConnection.updateServiceProvider(id, key, value)){
 			result = Utility.constructJSON("updateServiceProvider", true, "ServiceProvider updated successfully.");
@@ -43,9 +57,9 @@ public class ServiceProviderActions {
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     // Query parameters are parameters: http://localhost/<appln-folder-name>/user/update?email=abc&password=xyz
-    public String createServiceProvider() {
+    public String createServiceProvider(String serviceProviderJson) {
 		
-		ServiceProvider sp = null;
+		ServiceProvider sp = Utility.generateServiceProviderFromJSON(serviceProviderJson);
 		String result="";
 		
 		System.out.println("Insert Service Provider webservice is in.");
@@ -56,7 +70,6 @@ public class ServiceProviderActions {
 				result = Utility.constructJSON("insertServiceProvider", false);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
@@ -69,10 +82,8 @@ public class ServiceProviderActions {
     // Produces JSON as response
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/update?email=abc&password=xyz
-    public String deleteServiceProvider() {
-		
-		long id=0; 
+    // Query parameters are parameters: http://localhost/<appln-folder-name>/service/delete/<id>
+    public String deleteServiceProvider(@QueryParam("id")long id) {
 		
 		String result="";		
 		System.out.println("Delete service provider webservice is in.");
