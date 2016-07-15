@@ -16,7 +16,7 @@ import org.codehaus.jettison.json.JSONObject;
 import com.anearcan.jireh.elements.Service;
 
 
-@Path("Service")
+@Path("/service")
 public class ServiceActions {
 
 	@PUT

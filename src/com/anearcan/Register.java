@@ -68,7 +68,6 @@ public class Register {
                 }
             }
             catch (Exception e) {
-                // TODO Auto-generated catch block
                 System.out.println("Inside checkCredentials catch e ");
                 e.printStackTrace();
                 result = 3;

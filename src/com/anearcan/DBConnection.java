@@ -7,6 +7,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.codehaus.jettison.json.JSONObject;
+
 import com.anearcan.jireh.elements.ServiceProvider;
 import com.anearcan.jireh.elements.User;
 import com.anearcan.jireh.elements.Service;
@@ -378,9 +380,11 @@ public class DBConnection {
             	System.out.println("User deleted.");
             }
         } catch (SQLException sqle) {
-            sqle.printStackTrace();
+        	deleteStatus = false;
+        	sqle.printStackTrace();            
         } catch (Exception e) {
-            if (dbConn != null) {
+        	deleteStatus = false;
+        	if (dbConn != null) {
                 try {
 					dbConn.close();
 				} catch (SQLException e1) {
@@ -502,5 +506,42 @@ public class DBConnection {
     protected static boolean endService(long id)
     {
     	return updateService(id, "serviceEndTime", new java.util.Date());
+    }
+    
+    protected static boolean addDeleteAccountFeedback(JSONObject o) throws Exception{
+    	boolean status = false;
+    	Connection dbConn = null;
+        try {
+            try {
+                dbConn = DBConnection.createConnection();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            System.out.println("Inserting feedback");
+            Statement stmt = dbConn.createStatement();
+            String query = "INSERT into JirehSQL.DeletedUsersFeedback(email, reason, timeOfDeletion) values('"
+                    + o.getString("email") + "','"+ o.getString("reason") + "','" + o.getString("time") + "')";
+            System.out.println(query);
+            int result = stmt.executeUpdate(query);
+            
+            System.out.println("Inserting new feedback " + result);
+            //When record is successfully inserted
+            if (result >= 0) {
+            	status = true;
+            	System.out.println("Feedback inserted.");
+            }
+        } catch (SQLException sqle) {
+            throw sqle;
+        } catch (Exception e) {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+    	return status;
     }
 }

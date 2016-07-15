@@ -66,7 +66,6 @@ public class Utility {
             obj.put("id", user.getID());
             
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
         	e.printStackTrace();
         }
         System.out.println(obj.toString());
@@ -154,7 +153,7 @@ public class Utility {
      * @param err_msg
      * @return
      */
-    public static String constructJSON(String tag, boolean status,String err_msg) {
+    public static String constructJSON(String tag, boolean status, String err_msg) {
         JSONObject obj = new JSONObject();
         try {
             obj.put("tag", tag);
@@ -165,6 +164,20 @@ public class Utility {
         }
         return obj.toString();
     }
+    
+    public static String constructJSON(String tag, boolean status, String err_msg, JSONObject objects)
+    {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("tag", tag);
+            obj.put("status", new Boolean(status));
+            obj.put("error_msg", err_msg);
+            obj.put("list", objects);
+        } catch (JSONException e) {
+        	e.printStackTrace();
+        }
+        return obj.toString();    	
+    }
  
     public static String dateToDatabaseFormat(Date date){
     	String dateString = "";
@@ -172,4 +185,49 @@ public class Utility {
     	return sdf.format(date);
     }
     
+    /**
+     * Calculate distance between 2 points on earth's surface using their long and lat coordinates. 
+     * Haversine formula used as below
+     * dlon = lon2 - lon1 
+     * dlat = lat2 - lat1
+     * a = (sin(dlat/2))^2 + cos(lat1) * cos(lat2) * (sin(dlon/2))^2
+     * c = 2 * atan2( sqrt(a), sqrt(1-a) )
+     * d = R * c (where R is the radius of the Earth)
+     * Using  earth's radius of 6373km
+     */
+    public static double calculateDistanceInKM(double long1, double lat1, double long2, double lat2)
+    {
+    	double radiusOfEarthInKM = 6373.0;
+    	double dlong = long2 - long1;
+    	double dlat = lat2 - lat1;
+    	
+    	double a = Math.pow(Math.sin(dlat/2), 2) + (Math.cos(lat1)*Math.cos(lat2)*Math.pow(Math.sin(dlong/2), 2));
+    	double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+		double d = radiusOfEarthInKM * c;
+    	return d;    	
+    }
+    
+    /**
+     * Calculate distance between 2 points on earth's surface using their long and lat coordinates. 
+     * Haversine formula used as below
+     * dlon = lon2 - lon1 
+     * dlat = lat2 - lat1
+     * a = (sin(dlat/2))^2 + cos(lat1) * cos(lat2) * (sin(dlon/2))^2
+     * c = 2 * atan2( sqrt(a), sqrt(1-a) )
+     * d = R * c (where R is the radius of the Earth)
+     * 
+     * Using earth's radius of 3961 miles.
+     */
+    public static double calculateDistanceInMiles(double long1, double lat1, double long2, double lat2)
+    {
+    	double radiusOfEarthInMiles = 3961.0;
+    	double dlong = long2 - long1;
+    	double dlat = lat2 - lat1;
+    	
+    	double a = Math.pow(Math.sin(dlat/2), 2) + (Math.cos(lat1)*Math.cos(lat2)*Math.pow(Math.sin(dlong/2), 2));
+    	double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+		double d = radiusOfEarthInMiles * c;
+    	return d;    	
+    }
 }
+

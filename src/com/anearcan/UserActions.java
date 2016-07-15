@@ -26,7 +26,7 @@ public class UserActions {
     @Produces(MediaType.APPLICATION_JSON)
     // Query parameters are parameters: http://localhost/<appln-folder-name>/user/update
     public String updateUser(String userJson) {
-		
+		System.out.println("Update user ");
 		long id=0; 
 		String key="";
 		Object value = null;
@@ -57,17 +57,20 @@ public class UserActions {
 		return result;
 	}
 	
-	@DELETE
+	@PUT
     // Path: http://localhost/<appln-folder-name>/user/delete
     @Path("/delete")
     // Produces JSON as response
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/delete/<id>
-    public String deleteUser(@QueryParam("id") long id) {		
+    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/delete
+    public String deleteUser(String json) throws Exception {		
 		String result="";		
 		System.out.println("Delete user webservice is in.");
-		if(DBConnection.deleteUser(id)){
+		System.out.println(json);
+		JSONObject o = new JSONObject(json);
+		if(DBConnection.deleteUser(o.getLong("id"))){
+			DBConnection.addDeleteAccountFeedback(o);
 			result = Utility.constructJSON("deleteUser", true, "User deleted successfully.");
 		}else{
 			result = Utility.constructJSON("deleteUser", false);
