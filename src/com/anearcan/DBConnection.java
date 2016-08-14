@@ -32,6 +32,7 @@ public class DBConnection {
             return con;
         }
     }
+   
     /**
      * Method to check whether uname and pwd combination are correct
      * @param email
@@ -60,6 +61,9 @@ public class DBConnection {
                 		Long.toString(rs.getLong("phoneNumber")), rs.getString("email"));
                 u.setCurrentLocation(rs.getString("currentLocation"));
                 u.setID(rs.getInt("id"));
+                if(rs.getString("isAdmin").equals("Y")){
+                	u.setAdmin(true);
+                }
                 System.out.println(rs.getInt("id"));
             }
         } catch (SQLException sqle) {
@@ -129,8 +133,8 @@ public class DBConnection {
             System.out.println("Inserting Service Provider");
             System.out.println(sp.getPhoneNumber());
             Statement stmt = dbConn.createStatement();
-            String query = "INSERT into JirehSQL.ServiceProviders(user_id, availabilityRadius, serviceTypeOffered, bankInfo) values("
-                    + sp.getUserID() + "," + sp.getAvailabilityRadius() + ",'"+ sp.getServiceTypes()+"','"+ sp.getBankInfo() +"');";
+            String query = "INSERT into JirehSQL.ServiceProviders(user_id, availabilityRadiusinkm, serviceTypeOffered, bankInfo, businessAddress) values("
+                    + sp.getUserID() + "," + sp.getAvailabilityRadius() + ",'"+ sp.getServiceTypes()+"','"+ sp.getBankInfo() +"','"+ sp.getBusinessAddress() +"');";
             System.out.println(query);
             int result = stmt.executeUpdate(query);
             
@@ -544,4 +548,54 @@ public class DBConnection {
         }
     	return status;
     }
+
+	
+     protected static boolean insertServiceProviderRequest(ServiceProvider sp) throws SQLException {
+    	 
+    	 boolean insertStatus = false;
+    	 long serviceProviderId = -1;
+         Connection dbConn = null;
+         try {
+             try {
+                 dbConn = DBConnection.createConnection();
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+             System.out.println("Inserting Service Provider Request");
+             Statement stmt = dbConn.createStatement();
+             //Getting the service provider ID
+             String query = "SELECT id FROM JirehSQL.ServiceProviders WHERE user_id=" + sp.getUserID();
+             //System.out.println(query);
+             ResultSet rs = stmt.executeQuery(query);
+             
+             while (rs.next()) {
+            	 serviceProviderId = rs.getInt("id");
+            	 System.out.println("Returned Id "+serviceProviderId);
+             }
+             
+             query = "INSERT into JirehSQL.serviceProviderRequests(serviceProviderId) values("
+                     + serviceProviderId +");";
+             System.out.println(query);
+             int result = stmt.executeUpdate(query);
+             
+             System.out.println("Inserting Service provider request" + result);
+             //When record is successfully inserted
+             if (result>=0) {
+             	insertStatus = true;
+             	System.out.println("Service Provider request inserted.");
+             }
+         } catch (SQLException sqle) {
+             throw sqle;
+         } catch (Exception e) {
+             if (dbConn != null) {
+                 dbConn.close();
+             }
+             throw e;
+         } finally {
+             if (dbConn != null) {
+                 dbConn.close();
+             }
+         }
+         return insertStatus;		
+	}
 }

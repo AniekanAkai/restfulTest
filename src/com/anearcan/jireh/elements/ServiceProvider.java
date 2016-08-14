@@ -11,6 +11,7 @@ import java.sql.Date;
  */
 public class ServiceProvider extends User {
 
+	private String photo;
     private String location; //in JSON format
     private double availabiltyRadius=0;
     private long verificationid = 0; //ServiceProvider id(from DB) would be used here.
@@ -25,26 +26,41 @@ public class ServiceProvider extends User {
                            String phoneNumber, String email,String location, double availabiltyRadius,
                            String serviceproviderid,String bankInfo,ArrayList<String> servicesOffered,
                            String password){
+    	
         super(fullname, password, dateOfBirth, phoneNumber, email);
         this.location = location;
-        this.availabiltyRadius = availabiltyRadius;
-        
+        this.availabiltyRadius = availabiltyRadius;        
         this.bankInfo = bankInfo;
         this.servicesOffered = servicesOffered;
     }
+    
     public ServiceProvider() {
-		// TODO Auto-generated constructor stub
+    	super();
+    	this.location = "";
+        this.availabiltyRadius = 0;        
+        this.bankInfo = "";
+        this.servicesOffered = new ArrayList<String>();
 	}
+    
 	//GPS location
-    public String getLocation() {
+    public String getBusinessAddress() {
         return location;
     }
 
-    public void setLocation(String location) {
+    public void setBusinessAddress(String location) {
         this.location = location;
     }
 
-    //Service provider ID
+    
+    public String getPhoto() {
+		return photo;
+	}
+
+	public void setPhoto(String photo) {
+		this.photo = photo;
+	}
+
+	//Service provider ID
     public long getVerificationID() {
         return verificationid;
     }
@@ -60,9 +76,7 @@ public class ServiceProvider extends User {
 
     public void setUserID(long userid) {
        super.setID(userid);
-    }
-
-    
+    }    
     
     // number of Cancellations
     public int getNumberOfCancellations() {

@@ -13,6 +13,7 @@ import java.util.ListIterator;
 public class User {
 	
 	private long id = 0;
+	private boolean isAdmin = false;
     private String password;
     private String fullname;
     private Date dateOfBirth;
@@ -145,4 +146,13 @@ public class User {
 		averageRating = ratings;
 		
 	}
+	
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
+    }
+
 }

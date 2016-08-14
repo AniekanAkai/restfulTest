@@ -23,7 +23,7 @@ public class ServiceProviderActions {
     // Produces JSON as response
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/update?email=abc&password=xyz
+    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/update
     public String updateServiceProvider(String serviceProviderJson) {
 		
 		long id=0; 
@@ -57,7 +57,7 @@ public class ServiceProviderActions {
     // Produces JSON as response
 	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/update?email=abc&password=xyz
+    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/create
     public String createServiceProvider(String serviceProviderJson) {
 		
 		ServiceProvider sp = Utility.generateServiceProviderFromJSON(serviceProviderJson);
@@ -67,6 +67,13 @@ public class ServiceProviderActions {
 		try {
 			if(DBConnection.insertServiceProvider(sp)){
 				result = Utility.constructJSON("insertServiceProvider", true, "Service Provider created successfully.");
+				//add new service provider request
+				if(DBConnection.insertServiceProviderRequest(sp)){
+					System.out.println("Service Provider request added successfully.");
+				}else{
+					System.out.println("Service Provider request not added.");
+					result = Utility.constructJSON("insertServiceProvider", false, "Service Provider request not added.");
+				}
 			}else{
 				result = Utility.constructJSON("insertServiceProvider", false);
 			}

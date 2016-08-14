@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -64,7 +65,7 @@ public class Utility {
             obj.put("phone", user.getPhoneNumber());
             obj.put("rating", user.getCurrentAverageRating());
             obj.put("id", user.getID());
-            
+            obj.put("isAdmin", user.isAdmin());            
         } catch (JSONException e) {
         	e.printStackTrace();
         }
@@ -88,8 +89,8 @@ public class Utility {
 					o.getString("email"));
 			u.setCurrentLocation(o.getString("currentLocation"));
 			u.setCurrentRating(o.getDouble("averageRating"));
-		} catch (JSONException e) {
-			
+			u.setAdmin(o.getBoolean("isAdmin"));
+		} catch (JSONException e) {			
 			e.printStackTrace();
 		}
     	
@@ -105,13 +106,15 @@ public class Utility {
     	try {
 			JSONObject o = new JSONObject(json);
 			sp = new ServiceProvider();
-			sp.setUserID(o.getLong("userid"));
-			sp.setAvailabilityRadius(o.getDouble("radius"));
+			sp.setUserID(o.getLong("id"));
+			sp.setAvailabilityRadius(o.getDouble("availabilityRadius"));
 			sp.setCurrentLocation(o.getString("currentLocation"));
 			sp.setBankInfo(o.getString("bankInfo"));
-			String[] servicesOffered = o.getString("servicesOffered").split(";");
-			for(int i=0; i<servicesOffered.length; i++){
-				sp.addServicesOffered(servicesOffered[i]);
+			sp.setBusinessAddress(o.getString("businessAddress"));
+			JSONArray servicesOffered = o.getJSONArray("servicesOffered");
+			
+			for(int i=0; i<servicesOffered.length()  ; i++){
+				sp.addServicesOffered(servicesOffered.getString(i));
 			}
 			
 		} catch (JSONException e) {
