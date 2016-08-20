@@ -18,7 +18,7 @@ public class Login {
     // Produces JSON as response
     @Produces(MediaType.APPLICATION_JSON)
     // Query parameters are parameters: http://localhost/<appln-folder-name>/login/dologin?email=abc&password=xyz
-    public String doLogin(@QueryParam("email") String email, @QueryParam("password") String pwd){
+    public String doLogin(@QueryParam("email") String email, @QueryParam("pw") String pwd){
         String response = "";
         User u = login(email, pwd);
         if(u != null){
