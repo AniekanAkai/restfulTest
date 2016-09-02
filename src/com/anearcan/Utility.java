@@ -53,7 +53,7 @@ public class Utility {
      * @param user
      * @return
      */
-    public static String constructJSON(String tag, boolean status, User user) {
+    public static String constructJSONForUserLogin(String tag, boolean status, User user) {
         JSONObject obj = new JSONObject();
         try {
             obj.put("tag", tag);
@@ -65,13 +65,55 @@ public class Utility {
             obj.put("phone", user.getPhoneNumber());
             obj.put("rating", user.getCurrentAverageRating());
             obj.put("id", user.getID());
-            obj.put("isAdmin", user.isAdmin());            
+            obj.put("isAdmin", user.isAdmin()); 
+            
+            obj.put("asServiceProvider", false);
         } catch (JSONException e) {
         	e.printStackTrace();
         }
         System.out.println(obj.toString());
         return obj.toString();
     }
+
+    /**
+     * Method to construct JSON
+     * 
+     * @param tag
+     * @param status
+     * @param sp
+     * @return
+     */
+    public static String constructJSONForServiceProviderLogin(String tag, boolean status, ServiceProvider sp) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("tag", tag);
+            obj.put("status", new Boolean(status));
+            obj.put("email", sp.getEmail());
+            obj.put("password", sp.getPassword());
+            obj.put("dob", sp.getDateOfBirth());
+            obj.put("fullname", sp.getFullname());
+            obj.put("phone", sp.getPhoneNumber());
+            obj.put("rating", sp.getCurrentAverageRating());
+            obj.put("id", sp.getID());
+            obj.put("isAdmin", sp.isAdmin());
+            obj.put("currentLocation", sp.getCurrentLocation());
+            
+            obj.put("availabilityRadius", sp.getAvailabilityRadius());
+            obj.put("bankInfo", sp.getBankInfo());
+            obj.put("businessAddress", sp.getBusinessAddress());
+            obj.put("servicesOffered", new JSONArray(sp.getServiceTypes()));
+            obj.put("numberOfCancellations", sp.getNumberOfCancellations());
+            obj.put("verificationId", sp.getVerificationID());
+            obj.put("profilePhotoURL", sp.getPhoto());
+            
+            obj.put("asServiceProvider", true);
+        } catch (JSONException e) {
+        	e.printStackTrace();
+        }
+        System.out.println(obj.toString());
+        return obj.toString();
+    }
+
     
     /*
      * Method to generate user from JSON

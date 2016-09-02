@@ -6,7 +6,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.anearcan.jireh.elements.ServiceProvider;
@@ -33,6 +36,80 @@ public class DBConnection {
         }
     }
    
+    
+    public static ServiceProvider serviceProviderLogin(String email, String pwd) throws Exception
+    {
+    	boolean isUserAvailable = false;
+        Connection dbConn = null;
+        User u = null;
+        ServiceProvider sp = null;
+        try {
+            try {
+                dbConn = DBConnection.createConnection();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            //First get the user's information.
+            Statement stmt = dbConn.createStatement();
+            String query = "SELECT * FROM JirehSQL.Users WHERE email = '" + email
+                    + "' AND password=" + "'" + pwd + "'";
+            System.out.println(query);
+            ResultSet rs = stmt.executeQuery(query);
+            
+            while (rs.next()) {
+                u = new User(rs.getString("fullname"), rs.getString("password"), new java.sql.Date(new java.util.Date().getTime()),//rs.getDate("dateOfBirth"), 
+                		Long.toString(rs.getLong("phoneNumber")), rs.getString("email"));
+                u.setCurrentLocation(rs.getString("currentLocation"));
+                u.setID(rs.getInt("id"));
+                if(rs.getString("isAdmin").equals("Y")){
+                	u.setAdmin(true);
+                }
+                System.out.println(rs.getInt("id"));
+            }
+            
+            //Use user's information to get Service provider's information.
+            query = "SELECT * FROM JirehSQL.ServiceProviders WHERE user_id = " + u.getID();
+            System.out.println(query);
+            rs = stmt.executeQuery(query);
+            while (rs.next()) {
+            	
+            	if(rs.getString("requestStatus").equals("Approved")){
+	            	sp = new ServiceProvider(u, rs.getDouble("availabilityRadiusinkm"), rs.getLong("id"), rs.getString("bankInfo"), 
+	            			new ArrayList<String>());
+	            	
+	    			sp.setUserID(rs.getLong("user_id"));
+
+	    			sp.setNumberOfCancellations(rs.getInt("numberOfCancellations"));
+	    			sp.setBusinessAddress(rs.getString("businessAddress"));
+	    			sp.setPhoto(rs.getString("profilePictureURL"));
+	    			String[] servicesOffered = rs.getString("serviceTypeOffered").split(",");
+	    			
+	    			
+	    			for(int i=0; i<servicesOffered.length; i++){
+	    				sp.addServicesOffered(servicesOffered[i]);
+	    			}
+            	}else{
+            		sp = null;
+            		System.out.println("User's service provider request has not been approved.");
+            	}
+            }
+            
+        } catch (SQLException sqle) {
+        	
+            sqle.printStackTrace();
+        } catch (Exception e) {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+        return sp;
+    }
+    
     /**
      * Method to check whether uname and pwd combination are correct
      * @param email
@@ -40,7 +117,7 @@ public class DBConnection {
      * @return
      * @throws Exception
      */
-    public static User login(String email, String pwd) throws Exception {
+    public static User userLogin(String email, String pwd) throws Exception {
         boolean isUserAvailable = false;
         Connection dbConn = null;
         User u = null;

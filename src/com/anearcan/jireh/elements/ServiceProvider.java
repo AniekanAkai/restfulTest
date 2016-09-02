@@ -34,6 +34,15 @@ public class ServiceProvider extends User {
         this.servicesOffered = servicesOffered;
     }
     
+    public ServiceProvider(User u, double availabiltyRadius, long verificationId,String bankInfo,ArrayList<String> servicesOffered){
+        super(u.getFullname(), u.getPassword(), u.getDateOfBirth(), u.getPhoneNumber(), u.getEmail());
+        this.availabiltyRadius = availabiltyRadius;
+        this.verificationid = verificationId;
+        this.bankInfo = bankInfo;
+        this.servicesOffered = servicesOffered;
+    }
+
+    
     public ServiceProvider() {
     	super();
     	this.location = "";
