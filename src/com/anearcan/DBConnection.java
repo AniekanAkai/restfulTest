@@ -7,9 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
-
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.anearcan.jireh.elements.ServiceProvider;
@@ -210,8 +207,8 @@ public class DBConnection {
             System.out.println("Inserting Service Provider");
             System.out.println(sp.getPhoneNumber());
             Statement stmt = dbConn.createStatement();
-            String query = "INSERT into JirehSQL.ServiceProviders(user_id, availabilityRadiusinkm, serviceTypeOffered, bankInfo, businessAddress) values("
-                    + sp.getUserID() + "," + sp.getAvailabilityRadius() + ",'"+ sp.getServiceTypes()+"','"+ sp.getBankInfo() +"','"+ sp.getBusinessAddress() +"');";
+            String query = "INSERT into JirehSQL.ServiceProviders(user_id, availabilityRadiusinkm, serviceTypeOffered, bankInfo, businessAddress, profilePictureURL) values("
+                    + sp.getUserID() + "," + sp.getAvailabilityRadius() + ",'"+ sp.getServiceTypes()+"','"+ sp.getBankInfo() +"','"+ sp.getBusinessAddress() +"','"+ sp.getPhoto() +"');";
             System.out.println(query);
             int result = stmt.executeUpdate(query);
             

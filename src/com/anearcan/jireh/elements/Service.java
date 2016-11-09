@@ -3,8 +3,6 @@ package com.anearcan.jireh.elements;
 
 
 import java.sql.Date;
-//import com.google.android.gms.location;
-import java.util.GregorianCalendar;
 
 /**
  * Created by Teddy on 10/10/2015.
