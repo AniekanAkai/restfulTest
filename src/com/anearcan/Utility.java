@@ -2,16 +2,12 @@ package com.anearcan;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.anearcan.jireh.elements.Service;
 import com.anearcan.jireh.elements.ServiceProvider;
-import com.anearcan.jireh.elements.ServiceType;
 import com.anearcan.jireh.elements.User;
 
 public class Utility {
@@ -153,6 +149,7 @@ public class Utility {
 			sp.setCurrentLocation(o.getString("currentLocation"));
 			sp.setBankInfo(o.getString("bankInfo"));
 			sp.setBusinessAddress(o.getString("businessAddress"));
+			sp.setPhoto(o.getString("profilePictureURL"));
 			JSONArray servicesOffered = o.getJSONArray("servicesOffered");
 			
 			for(int i=0; i<servicesOffered.length()  ; i++){
