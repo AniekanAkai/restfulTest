@@ -156,6 +156,56 @@ public class DBConnection {
         return u;
     }
 
+    
+    /**
+     * Method to check whether uname and pwd combination are correct
+     * @param email
+     * @param pwd
+     * @return
+     * @throws Exception
+     */
+    public static ArrayList<User> getAllAdmins() throws Exception {
+        boolean isUserAvailable = false;
+        ArrayList<User> admins = new ArrayList<User>();
+        Connection dbConn = null;
+        User u = null;
+        try {
+            try {
+                dbConn = DBConnection.createConnection();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Statement stmt = dbConn.createStatement();
+            String query = "SELECT * FROM JirehSQL.Users WHERE isAdmin = 'Y'";
+            //System.out.println(query);
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                u = new User(rs.getString("fullname"), rs.getString("password"), new java.sql.Date(new java.util.Date().getTime()),//rs.getDate("dateOfBirth"), 
+                		Long.toString(rs.getLong("phoneNumber")), rs.getString("email"));
+                u.setCurrentLocation(rs.getString("currentLocation"));
+                u.setID(rs.getInt("id"));
+                if(rs.getString("isAdmin").equals("Y")){
+                	u.setAdmin(true);
+                }
+                System.out.println(rs.getInt("id"));
+                admins.add(u);
+            }
+        } catch (SQLException sqle) {
+        	
+            sqle.printStackTrace();
+        } catch (Exception e) {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+        return admins;
+    }
+    
     public static boolean insertUser(User u) throws SQLException, Exception {
         boolean insertStatus = false;
         Connection dbConn = null;

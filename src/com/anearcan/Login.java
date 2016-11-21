@@ -19,13 +19,13 @@ public class Login {
     // Produces JSON as response
     @Produces(MediaType.APPLICATION_JSON)
     // Query parameters are parameters: http://localhost/<appln-folder-name>/login/dologin?email=abc&password=xyz
-    public String doLogin(@QueryParam("asServiceProvider") String asServiceProvider, @QueryParam("email") String email, @QueryParam("pw") String pwd){
+    public String doLogin(@QueryParam("asServiceProvider") String asServiceProvider, @QueryParam("email") String email, @QueryParam("pw") String pwd) throws Exception{
         String response = "";
         if(asServiceProvider.equalsIgnoreCase("Y")){
         	System.out.println("Logging in as service provider.");
         	ServiceProvider sp = serviceProviderLogin(email, pwd);
         	if(sp != null){
-	            response = Utility.constructJSONForServiceProviderLogin("login",true, sp);
+	            response = Utility.constructJSONForServiceProviderLogin("login",true, sp, DBConnection.getAllAdmins());
 	        }else{
 	            response = Utility.constructJSON("login", false, "Incorrect Email or Password");
 	        }
@@ -33,12 +33,12 @@ public class Login {
         	System.out.println("Logging in as user.");
 	        User u = userLogin(email, pwd);
 	        if(u != null){
-	            response = Utility.constructJSONForUserLogin("login",true, u);
+	            response = Utility.constructJSONForUserLogin("login",true, u, DBConnection.getAllAdmins());
 	        }else{
 	            response = Utility.constructJSON("login", false, "Incorrect Email or Password");
 	        }
         }
-        return response;        
+        return response;
     }
  
     /**

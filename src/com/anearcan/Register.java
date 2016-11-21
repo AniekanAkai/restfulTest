@@ -44,7 +44,7 @@ public class Register {
     private int registerUser(String fullname,String password, Date dateOfBirth, String phoneNumber, String email){
         System.out.println("Inside checkCredentials");
         int result = 3;
-        if(Utility.isNotNull(email)/*&& Utility.isNotNull(age)*/){
+        if(Utility.isNotNull(email)){
             try {
             	User u = new User(fullname, password, dateOfBirth, phoneNumber, email);
                 if(DBConnection.insertUser(u)){

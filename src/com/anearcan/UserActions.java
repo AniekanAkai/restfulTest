@@ -1,13 +1,21 @@
 package com.anearcan;
 
+import java.util.ArrayList;
+
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+
+import com.anearcan.jireh.elements.ServiceProvider;
+import com.anearcan.jireh.elements.User;
 
 
 @Path("/user")
@@ -72,4 +80,23 @@ public class UserActions {
 		}
 		return result;
 	}
+	
+	// HTTP Get Method
+    @GET
+    // Path: http://localhost/<appln-folder-name>/user/getAllAdmins
+    @Path("/getAllAdmins")
+    // Produces JSON as response
+    @Produces(MediaType.APPLICATION_JSON)
+    // Query parameters are parameters: http://localhost/<appln-folder-name>/user/getAllAdmins
+    public String getAllAdmins() throws Exception{
+        String response = "";
+        ArrayList<User> uList = DBConnection.getAllAdmins();
+        if(!uList.isEmpty()){
+            response = Utility.constructJSONForListOfUsers("AllAdmins",true, uList);
+        }else{
+            response = Utility.constructJSON("AllAdmins", false, "No administators in DB.");
+        }
+	    System.out.println(response); 
+        return response;
+    }
 }

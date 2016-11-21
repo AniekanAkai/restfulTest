@@ -2,6 +2,8 @@ package com.anearcan;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -49,8 +51,9 @@ public class Utility {
      * @param user
      * @return
      */
-    public static String constructJSONForUserLogin(String tag, boolean status, User user) {
+    public static String constructJSONForUserLogin(String tag, boolean status, User user, ArrayList<User> admins) {
         JSONObject obj = new JSONObject();
+        ArrayList<String> adminJSONList = new ArrayList<String>();
         try {
             obj.put("tag", tag);
             obj.put("status", new Boolean(status));
@@ -58,12 +61,18 @@ public class Utility {
             obj.put("password", user.getPassword());
             obj.put("dob", user.getDateOfBirth());
             obj.put("fullname", user.getFullname());
-            obj.put("phone", user.getPhoneNumber());
+            obj.put("phoneNumber", user.getPhoneNumber());
             obj.put("rating", user.getCurrentAverageRating());
             obj.put("id", user.getID());
             obj.put("isAdmin", user.isAdmin()); 
             
             obj.put("asServiceProvider", false);
+            
+//            obj.put("admins", admins);
+            for(int i=0; i<admins.size();i++){
+            	adminJSONList.add(constructUserJSON(admins.get(i)).toString());
+            }
+            obj.put("admins", adminJSONList);
         } catch (JSONException e) {
         	e.printStackTrace();
         }
@@ -79,8 +88,9 @@ public class Utility {
      * @param sp
      * @return
      */
-    public static String constructJSONForServiceProviderLogin(String tag, boolean status, ServiceProvider sp) {
+    public static String constructJSONForServiceProviderLogin(String tag, boolean status, ServiceProvider sp, ArrayList<User> admins) {
         JSONObject obj = new JSONObject();
+        ArrayList<String> adminJSONList = new ArrayList<String>();
         try {
             obj.put("tag", tag);
             obj.put("status", new Boolean(status));
@@ -88,7 +98,7 @@ public class Utility {
             obj.put("password", sp.getPassword());
             obj.put("dob", sp.getDateOfBirth());
             obj.put("fullname", sp.getFullname());
-            obj.put("phone", sp.getPhoneNumber());
+            obj.put("phoneNumber", sp.getPhoneNumber());
             obj.put("rating", sp.getCurrentAverageRating());
             obj.put("id", sp.getID());
             obj.put("isAdmin", sp.isAdmin());
@@ -103,6 +113,12 @@ public class Utility {
             obj.put("profilePhotoURL", sp.getPhoto());
             
             obj.put("asServiceProvider", true);
+            
+            for(int i=0; i<admins.size();i++){
+            	adminJSONList.add(constructUserJSON(admins.get(i)).toString());
+            }
+            obj.put("admins", adminJSONList);
+
         } catch (JSONException e) {
         	e.printStackTrace();
         }
@@ -110,6 +126,88 @@ public class Utility {
         return obj.toString();
     }
 
+	public static String constructJSONForListOfUsers(String tag, boolean status,
+			ArrayList<User> admins) {
+		
+		JSONObject obj = new JSONObject();
+
+		ArrayList<String> adminJSONList = new ArrayList<String>();
+        for(int i=0; i<admins.size();i++){
+        	adminJSONList.add(constructUserJSON(admins.get(i)).toString());
+        }
+        try {
+            obj.put("tag", tag);
+            obj.put("status", new Boolean(status));
+        	obj.put("admins", adminJSONList);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+        System.out.println(obj.toString());
+        return obj.toString();
+	}
+    
+    
+    public static JSONObject constructUserJSON(User user)
+    {
+        JSONObject obj = null;
+        try {
+            obj = new JSONObject();
+            obj.put("email", user.getEmail());
+            obj.put("password", user.getPassword());
+            obj.put("dob", user.getDateOfBirth());
+            obj.put("fullname", user.getFullname());
+            obj.put("phoneNumber", user.getPhoneNumber());
+            obj.put("rating", user.getCurrentAverageRating());
+            obj.put("id", user.getID());
+//            obj.put("id", u.getID());
+//            obj.put("fullname", u.getFullname());
+//            obj.put("password", u.getPassword());
+//            obj.put("phoneNumber", u.getPhoneNumber());
+//            obj.put("email", u.getEmail());
+//            obj.put("dob", u.getDateOfBirth().getTime());
+//            obj.put("currentLocation", u.getCurrentLocation().toString());
+//            obj.put("averageRating", u.getCurrentAverageRating());
+//            obj.put("isAdmin", u.isAdmin());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+
+    public static JSONObject constructServiceProviderJSON(ServiceProvider sp)
+    {
+        JSONObject obj = null;
+        try {
+            obj = constructUserJSON(sp);
+            obj.put("email", sp.getEmail());
+            obj.put("password", sp.getPassword());
+            obj.put("dob", sp.getDateOfBirth());
+            obj.put("fullname", sp.getFullname());
+            obj.put("phoneNumber", sp.getPhoneNumber());
+            obj.put("rating", sp.getCurrentAverageRating());
+            obj.put("id", sp.getID());
+            obj.put("isAdmin", sp.isAdmin());
+            obj.put("currentLocation", sp.getCurrentLocation());
+            
+            obj.put("availabilityRadius", sp.getAvailabilityRadius());
+            obj.put("bankInfo", sp.getBankInfo());
+            obj.put("businessAddress", sp.getBusinessAddress());
+            obj.put("servicesOffered", new JSONArray(sp.getServiceTypes()));
+            obj.put("numberOfCancellations", sp.getNumberOfCancellations());
+            obj.put("verificationId", sp.getVerificationID());
+            obj.put("profilePhotoURL", sp.getPhoto());
+//            obj.put("availabilityRadius",sp.getAvailabilityRadius());
+//            obj.put("bankInfo",sp.getBankInfo());
+//            obj.put("servicesOffered", new JSONArray(sp.getServiceTypes()));
+//            obj.put("businessAddress", sp.getBusinessAddress());
+//            obj.put("profilePictureURL", sp.getPhoto());
+//            obj.put("numberOfCancellation", sp.getNumberOfCancellations());
+//            obj.put("verificationId", sp.getVerificationId());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
     
     /*
      * Method to generate user from JSON
@@ -152,7 +250,7 @@ public class Utility {
 			sp.setPhoto(o.getString("profilePictureURL"));
 			JSONArray servicesOffered = o.getJSONArray("servicesOffered");
 			
-			for(int i=0; i<servicesOffered.length()  ; i++){
+			for(int i=0; i<servicesOffered.length(); i++){
 				sp.addServicesOffered(servicesOffered.getString(i));
 			}
 			
@@ -183,10 +281,7 @@ public class Utility {
 		}
     	return s;
     }
-    
-    
-    
-    
+        
     /**
      * Method to construct JSON with Error Msg
      * 
@@ -271,5 +366,7 @@ public class Utility {
 		double d = radiusOfEarthInMiles * c;
     	return d;    	
     }
+
+
 }
 
