@@ -1,7 +1,11 @@
 package com.anearcan;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -12,6 +16,7 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.anearcan.jireh.elements.ServiceProvider;
+import com.anearcan.jireh.elements.User;
 
 @Path("/serviceProvider")
 public class ServiceProviderActions {
@@ -101,18 +106,28 @@ public class ServiceProviderActions {
 		return result;
 	}
 	
-	@PUT
-    // Path: http://localhost/<appln-folder-name>/serviceprovider/get
-    @Path("/get")
+	@GET
+//    // Path: http://localhost/<appln-folder-name>/serviceprovider/getServiceProviders
+    @Path("/getServiceProviders")
     // Produces JSON as response
-	@Consumes(MediaType.APPLICATION_JSON)
+////	@Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    // Query parameters are parameters: http://localhost/<appln-folder-name>/service/get
-	//json contains the user id, with the current location.
-	public String getServiceProviders(String json)
+    // Query parameters are parameters: http://localhost/<appln-folder-name>/serviceprovider/getServiceProviders
+	// json contains the user id, with the current location.
+	public String getServiceProviders(@QueryParam("user_id") long id, @QueryParam("currentLocation") String location)
 	{
-		return json;
-		
-	}
-	
+		String serviceProvidersListJSON = "";
+		User user = new User();
+		user.setID(id);
+		user.setCurrentLocation(location);
+		System.out.println("Location: " + location);
+		try {
+			ArrayList<ServiceProvider> spList = DBConnection.getServiceProvidersInArea(user);
+			serviceProvidersListJSON = Utility.constructJSONForListOfServiceProviders("getServiceProvidersInArea",true, spList);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Utility.constructJSON("getServiceProvidersInArea", false, e.getMessage());
+		}
+		return serviceProvidersListJSON;
+	}	
 }

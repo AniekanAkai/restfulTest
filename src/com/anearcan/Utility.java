@@ -37,7 +37,6 @@ public class Utility {
             obj.put("tag", tag);
             obj.put("status", new Boolean(status));
         } catch (JSONException e) {
-            // TODO Auto-generated catch block
         	e.printStackTrace();
         }
         return obj.toString();
@@ -73,6 +72,48 @@ public class Utility {
             	adminJSONList.add(constructUserJSON(admins.get(i)).toString());
             }
             obj.put("admins", adminJSONList);
+        } catch (JSONException e) {
+        	e.printStackTrace();
+        }
+        System.out.println(obj.toString());
+        return obj.toString();
+    }
+    
+    /**
+     * Method to construct JSON
+     * 
+     * @param tag
+     * @param status
+     * @param user
+     * @return
+     */
+    public static String constructJSONForUserLogin(String tag, boolean status, User user, ArrayList<User> admins, ArrayList<ServiceProvider> splist) {
+        JSONObject obj = new JSONObject();
+        ArrayList<String> adminJSONList = new ArrayList<String>();
+        ArrayList<String> serviceProviderJSONList = new ArrayList<String>();
+        try {
+            obj.put("tag", tag);
+            obj.put("status", new Boolean(status));
+            obj.put("email", user.getEmail());
+            obj.put("password", user.getPassword());
+            obj.put("dob", user.getDateOfBirth());
+            obj.put("fullname", user.getFullname());
+            obj.put("phoneNumber", user.getPhoneNumber());
+            obj.put("rating", user.getCurrentAverageRating());
+            obj.put("id", user.getID());
+            obj.put("isAdmin", user.isAdmin()); 
+            
+            obj.put("asServiceProvider", false);
+            
+            for(int i=0; i<admins.size();i++){
+            	adminJSONList.add(constructUserJSON(admins.get(i)).toString());
+            }
+            obj.put("admins", adminJSONList);
+            
+            for(int i=0; i<splist.size();i++){
+            	serviceProviderJSONList.add(constructServiceProviderJSON(splist.get(i)).toString());
+            }
+            obj.put("serviceProvidersList", serviceProviderJSONList);
         } catch (JSONException e) {
         	e.printStackTrace();
         }
@@ -146,7 +187,27 @@ public class Utility {
         return obj.toString();
 	}
     
-    
+
+	public static String constructJSONForListOfServiceProviders(String tag, boolean status,
+			ArrayList<ServiceProvider> serviceProviders) {
+		
+		JSONObject obj = new JSONObject();
+
+		ArrayList<String> serviceprovidersJSONList = new ArrayList<String>();
+        for(int i=0; i<serviceProviders.size();i++){
+        	serviceprovidersJSONList.add(constructServiceProviderJSON(serviceProviders.get(i)).toString());
+        }
+        try {
+            obj.put("tag", tag);
+            obj.put("status", new Boolean(status));
+        	obj.put("serviceProvidersList", serviceprovidersJSONList);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+        System.out.println(obj.toString());
+        return obj.toString();
+	}
+	
     public static JSONObject constructUserJSON(User user)
     {
         JSONObject obj = null;
@@ -317,7 +378,7 @@ public class Utility {
     }
  
     public static String dateToDatabaseFormat(Date date){
-    	String dateString = "";
+//    	String dateString = "";
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
     	return sdf.format(date);
     }

@@ -36,7 +36,7 @@ public class DBConnection {
     
     public static ServiceProvider serviceProviderLogin(String email, String pwd) throws Exception
     {
-    	boolean isUserAvailable = false;
+
         Connection dbConn = null;
         User u = null;
         ServiceProvider sp = null;
@@ -115,7 +115,7 @@ public class DBConnection {
      * @throws Exception
      */
     public static User userLogin(String email, String pwd) throws Exception {
-        boolean isUserAvailable = false;
+
         Connection dbConn = null;
         User u = null;
         try {
@@ -165,7 +165,7 @@ public class DBConnection {
      * @throws Exception
      */
     public static ArrayList<User> getAllAdmins() throws Exception {
-        boolean isUserAvailable = false;
+        
         ArrayList<User> admins = new ArrayList<User>();
         Connection dbConn = null;
         User u = null;
@@ -722,4 +722,72 @@ public class DBConnection {
          }
          return insertStatus;		
 	}
+     
+     public static ArrayList<ServiceProvider> getServiceProvidersInArea(User u) throws SQLException{
+    	 
+    	 ArrayList<ServiceProvider> spList = new ArrayList<ServiceProvider>();
+    	 
+         Connection dbConn = null;
+         
+         try {
+             try {
+                 dbConn = DBConnection.createConnection();
+             } catch (Exception e) {
+                 e.printStackTrace();
+             }
+             Statement stmt = dbConn.createStatement();
+             String query = "select ServiceProviders.id, ServiceProviders.user_id, ServiceProviders.businessAddress, "
+             		+ "ServiceProviders.availabilityRadiusinKM, Users.currentLocation, Users.fullname, Users.email, "
+             		+ "ServiceProviders.numberOfCancellations, ServiceProviders.serviceTypeOffered, ServiceProviders.bankInfo, "
+             		+ "ServiceProviders.profilePictureURL from ServiceProviders INNER JOIN Users on ServiceProviders.user_id=Users.id "
+             		+ "where ServiceProviders.requestStatus='Approved';";
+             System.out.println(query);
+             ResultSet rs = stmt.executeQuery(query);
+             while (rs.next()) {
+            	 double userLongitude = Double.parseDouble(u.getCurrentLocation().split(",")[1]);
+            	 double userLatitude = Double.parseDouble(u.getCurrentLocation().split(",")[0]);
+            	 
+            	 double serviceProviderLongitude = Double.parseDouble(rs.getString("currentLocation").split(",")[1]);
+            	 double serviceProviderLatitude = Double.parseDouble(rs.getString("currentLocation").split(",")[0]);
+            	 
+            	 double distanceBetweenFromUser = Utility.calculateDistanceInKM(userLongitude, userLatitude, serviceProviderLongitude, serviceProviderLatitude);
+            	 
+            	 //If the user is in the service provider's radius, show service provider on map
+            	 if(distanceBetweenFromUser <=rs.getDouble("availabilityRadiusinkm")){
+            		 ServiceProvider sp = new ServiceProvider(new User(), 
+                			 rs.getDouble("availabilityRadiusinkm"),
+                			 rs.getLong("id"),
+                			 rs.getString("bankInfo"), 
+                			 new ArrayList<String>());
+    	            	
+        			sp.setUserID(rs.getLong("user_id"));
+        			sp.setNumberOfCancellations(rs.getInt("numberOfCancellations"));
+        			sp.setBusinessAddress(rs.getString("businessAddress"));
+        			sp.setPhoto(rs.getString("profilePictureURL"));
+        			sp.setCurrentLocation(rs.getString("currentLocation"));
+        			sp.setFullname(rs.getString("fullname"));
+        			sp.setEmail(rs.getString("email"));
+        			String[] servicesOffered = rs.getString("serviceTypeOffered").split(",");
+        			
+        			for(int i=0; i<servicesOffered.length; i++){
+        				sp.addServicesOffered(servicesOffered[i]);
+        			}
+        			spList.add(sp);
+            	 }
+             }
+         } catch (SQLException sqle) {
+             sqle.printStackTrace();
+         } catch (Exception e) {
+             if (dbConn != null) {
+                 dbConn.close();
+             }
+             throw e;
+         } finally {
+             if (dbConn != null) {
+                 dbConn.close();
+             }
+         }
+    	 
+    	 return spList;
+     }
 }
