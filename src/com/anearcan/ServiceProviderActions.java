@@ -12,6 +12,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -38,9 +39,21 @@ public class ServiceProviderActions {
 		try {
 			JSONObject o = new JSONObject(serviceProviderJson);
 			id = o.getLong("id");
-			key = o.getString("key");
-			value = o.get("value");
-			
+			JSONArray updates = o.getJSONArray("updates");
+			for(int i=0; i<updates.length(); i++){
+				o = updates.getJSONObject(i);
+				key = o.getString("key");
+				value = o.get("value");
+				if(DBConnection.updateServiceProvider(id, key, value)){
+					System.out.println("Service provider updated successfully");
+					result = Utility.constructJSON("updateServiceProvider", true, "Service provider updated successfully.");
+					System.out.println(result);
+				}else{
+					System.out.println("Service provider update failed");
+					result = Utility.constructJSON("updateServiceProvider", false);
+					System.out.println(result);
+				}
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -129,5 +142,23 @@ public class ServiceProviderActions {
 			Utility.constructJSON("getServiceProvidersInArea", false, e.getMessage());
 		}
 		return serviceProvidersListJSON;
-	}	
+	}
+	
+	@GET
+	@Path("/getPendingServiceProviderRequests")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getPendingServiceProviderRequests(){
+
+		String serviceProviderRequestsListJSON = "";
+		
+		try {
+			ArrayList<ServiceProvider> spList = DBConnection.getAllPendingServiceProviderRequests();
+			serviceProviderRequestsListJSON = Utility.constructJSONForListOfServiceProviders("getAllPendingServiceProviderRequests",true, spList);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			Utility.constructJSON("getServiceProvidersInArea", false, e.getMessage());
+		}		
+		
+		return serviceProviderRequestsListJSON;
+	}
 }
