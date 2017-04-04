@@ -156,6 +156,38 @@ public class DBConnection {
         return u;
     }
 
+    public static boolean userExists(String email) throws Exception {
+
+        Connection dbConn = null;
+        User u = null;
+        try {
+            try {
+                dbConn = DBConnection.createConnection();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            Statement stmt = dbConn.createStatement();
+            String query = "SELECT * FROM JirehSQL.Users WHERE email = '" + email+"'";
+            //System.out.println(query);
+            ResultSet rs = stmt.executeQuery(query);
+            return rs.next();
+           
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+            return false;
+        } catch (Exception e) {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+            throw e;
+          
+        } finally {
+            if (dbConn != null) {
+                dbConn.close();
+            }
+        }
+        
+    }
     
     /**
      * Method to check whether uname and pwd combination are correct
@@ -813,7 +845,8 @@ public class DBConnection {
         	 double distanceBetweenFromUser = Utility.calculateDistanceInKM(userLongitude, userLatitude, serviceProviderLongitude, serviceProviderLatitude);
         	 
         	 //If the user is in the service provider's radius, show service provider on map
-        	 if(distanceBetweenFromUser <=rs.getDouble("availabilityRadiusinkm")){
+//        	 System.out.println("Service Provider: "+rs.getString("fullname")+"... Distance from User: "+ distanceBetweenFromUser);
+        	 if(distanceBetweenFromUser <= rs.getDouble("availabilityRadiusinkm")){
         		 ServiceProvider sp = new ServiceProvider(new User(), 
             			 rs.getDouble("availabilityRadiusinkm"),
             			 rs.getLong("id"),

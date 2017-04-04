@@ -7,6 +7,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.codehaus.jettison.json.JSONArray;
@@ -96,5 +97,30 @@ public class UserActions {
         }
 	    System.out.println(response); 
         return response;
+    }
+    
+    @GET
+    @Path("checkUserExists")
+//    Path: http://localhost/restfulTest/user/checkUserExists?email=abc
+    @Produces(MediaType.APPLICATION_JSON)
+    public String checkUserExists(@QueryParam("email") String email){
+		
+    	String response = "";
+    			
+    	JSONObject obj = new JSONObject();
+    	try {
+            obj.put("tag", "CheckUserExist");
+            obj.put("result", DBConnection.userExists(email));
+            response = obj.toString();
+        } catch (JSONException e) {
+        	e.printStackTrace();
+        	response = Utility.constructJSON("AllAdmins", false, "No administators in DB.");
+        } catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			response = Utility.constructJSON("AllAdmins", false, "No administators in DB.");
+		}
+		return response;
+    	
     }
 }
